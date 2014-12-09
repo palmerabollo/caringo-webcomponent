@@ -9,7 +9,20 @@
         ready: function() {},
 
         // Fires when the element’s initial set of children and siblings are guaranteed to exist
-        domReady: function() {},
+        domReady: function() {
+
+            this.$.filedrop.addEventListener('fileUploading', function(ev) {
+                console.log("Uploading started", ev.detail);
+            });
+
+            this.$.filedrop.addEventListener('fileUploaded', function(ev) {
+                console.info("File uploaded, and saved as ", ev.detail.name, ev.detail);
+            });
+
+            this.$.filedrop.addEventListener('fileUploadError', function(ev) {
+                console.warn("Upload error! ", ev.detail);
+            });
+        },
 
         // Fires when the element was inserted into the document
         attached: function() {},

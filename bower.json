@@ -1,19 +1,20 @@
 {
-    "name": "caringo-webcomponent",
-    "version": "0.0.0",
-    "description": "Cloud Storage",
-    "license": "MIT",
-    "main": "dist/cloud-storage.html",
-    "keywords": [
-        "polymer",
-        "web-components"
-    ],
-    "ignore": [
-        "**/.*",
-        "node_modules",
-        "bower_components"
-    ],
-    "dependencies": {
-        "polymer": "Polymer/polymer#^0.5.1"
-    }
+  "name": "caringo-webcomponent",
+  "version": "0.0.0",
+  "description": "Cloud Storage",
+  "license": "MIT",
+  "main": "dist/cloud-storage.html",
+  "keywords": [
+    "polymer",
+    "web-components"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^0.5.1",
+    "juicy-filedrop": "~0.0.2"
+  }
 }

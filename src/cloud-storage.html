@@ -1,11 +1,11 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/juicy-filedrop/juicy-filedrop.html">
 
 <polymer-element name="cloud-storage" attributes="endpoint">
     <template>
-        <style>
-        </style>
+        <link rel="stylesheet" href="style.css"/>
 
-        <input type="file" multiple="true">
+        <juicy-filedrop id="filedrop" url="{{endpoint}}">DROP FILES</juicy-filedrop>
     </template>
 
     <script type="text/javascript" src="main.js"></script>
