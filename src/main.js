@@ -9,7 +9,9 @@
         ready: function() {},
 
         // Fires when the element’s initial set of children and siblings are guaranteed to exist
-        domReady: function() {},
+        domReady: function() {
+            alert('pozi');
+        },
 
         // Fires when the element was inserted into the document
         attached: function() {},
