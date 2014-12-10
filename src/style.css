@@ -1,7 +1,9 @@
 #box {
     background: #EBEBEB;
-    height: 200px;
+    height: auto;
     width: 300px;
+    max-height: 120px;
+    overflow-y: auto;
 }
 
 ul {
@@ -19,6 +21,9 @@ ul {
     height: 20px;
     margin: -1px;
     background-color: #65BE2E;
+}
+.ui-progressbar.error .ui-progressbar-value {
+    background-color: red;
 }
 
 .progress-label {
@@ -70,4 +75,10 @@ ul {
     line-height: 20px;
     overflow: hidden !important;
     white-space: normal !important;
+}
+.name {
+    width: 85px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }

@@ -44,10 +44,11 @@
                         change: function() {
                             var label = $(progressBar).find('.progress-label');
                             var value = $(progressBar).progressbar('value');
-                            if (value === -1) {
-                                label.text('Error uploading');
+                            if (value === false) {
+                                label.text('Error');
+                                $(progressBar).addClass('error');
                             } else {
-                                label.text(value + '%');
+                                label.text(Math.floor(value) + '%');
                             }
                         }
                     });
@@ -127,13 +128,12 @@
                     var size = tagValue(file.size);
 
                     var source = $(shadowRoot.querySelector('#file-template')).text();
-                    console.log(source)
                     var template = Handlebars.compile(source);
 
                     var context = {
                         size: size, // TODO not needed, register handlebars helper
                         file: file
-                    }
+                    };
                     console.log(context);
                     var html = template(context);
                     console.log(html);
@@ -147,7 +147,7 @@
 
                 function errorUploading(file, errorMessage) {
                     var progressBar = $(shadowRoot.querySelector('#progressbar_' + file.id));
-                    $(progressBar).progressbar('value', -1);
+                    $(progressBar).progressbar('value', false);
                 }
 
                 for (var i = 0, file; file = input[0].files[i]; i++) {
@@ -166,7 +166,7 @@
                     } else {
                         ajaxFileUpload(file);
                     }
-                };
+                }
             });
         },
 
