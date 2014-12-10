@@ -67,7 +67,7 @@
                         }).done(function (data, textStatus, jqXHR) {
                             var fileAvailable = data && data.length > 0;
                             if (!fileAvailable) {
-                                setTimeout(function() {
+                                setTimeout(function retry() {
                                     verifyElementWasUploaded(timeWait * 2);
                                 }, timeWait * 2);
                             } else {
