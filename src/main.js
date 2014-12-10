@@ -30,6 +30,8 @@
             var ul = $(this.$.fileList);
             var shadowRoot = this.shadowRoot || this;
 
+            var endpoint = this.endpoint;
+
             input.change(function() {
                 function generateFileRow(name, fileId, fileSize) {
                     var size = tagValue(fileSize);
@@ -82,7 +84,7 @@
                     // moment we are sure that the file is available)
                     function verifyElementWasUploaded(timeWait) {
                         $.ajax({
-                            url: 'https://amruser.nos-eu-mad-1.instantservers.telefonica.com/bucket4?format=json&name=' + encodeURIComponent(name),
+                            url: endpoint + '?format=json&name=' + encodeURIComponent(name),
                             type: 'GET',
                             xhrFields: {
                                 withCredentials: true
@@ -102,7 +104,7 @@
                     }
 
                     $.ajax({
-                        url: 'https://amruser.nos-eu-mad-1.instantservers.telefonica.com/bucket4',
+                        url: endpoint,
                         type: 'POST',
                         data: formData,
                         // Options to tell JQuery not to process data nor worry about content-type
@@ -130,7 +132,7 @@
                         if (jqXHR.status === 0) {
                             // Make a HEAD request to check if the object was uploaded and the error is just due to a cross domain issue.
                             $.ajax({
-                                url: 'https://amruser.nos-eu-mad-1.instantservers.telefonica.com/bucket4/' + name,
+                                url: endpoint + '/' + name,
                                 type: 'HEAD',
                                 xhrFields: {
                                     withCredentials: true
