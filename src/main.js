@@ -127,17 +127,13 @@
                     var size = tagValue(file.size);
 
                     var source = $(shadowRoot.querySelector('#file-template')).text();
-                    console.log(source)
                     var template = Handlebars.compile(source);
 
                     var context = {
                         size: size, // TODO not needed, register handlebars helper
                         file: file
                     }
-                    console.log(context);
-                    var html = template(context);
-                    console.log(html);
-                    return html;
+                    return template(context);
                 }
 
                 function fileUploaded(file) {
