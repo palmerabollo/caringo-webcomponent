@@ -15,11 +15,6 @@
         return {size: size.toFixed(2), unit: unit};
     };
 
-    String.prototype.hashCode = function hashCode() {
-        // see http://stackoverflow.com/a/15710692/12388
-        return this.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
-    }
-
     Polymer('cloud-storage', {
         // Fires when an instance of the element is created
         created: function() {},
@@ -36,8 +31,6 @@
             var shadowRoot = this.shadowRoot;
 
             var endpoint = this.endpoint;
-
-console.log(this);
 
             input.change(function onFileChoosen(a) {
                 function ajaxFileUpload(file) {
@@ -158,7 +151,7 @@ console.log(this);
                 }
 
                 for (var i = 0, file; file = input[0].files[i]; i++) {
-                    file.id = 'file' + file.name.hashCode();
+                    file.id = 'file' + parseInt(Math.random() * 10000000);
 
                     $('.name').each(function overwriteFilesByName() {
                         if ($(this).children('span').text() === file.name) {
