@@ -1,12 +1,15 @@
 {
     "name": "caringo-webcomponent",
-    "version": "0.0.0",
+    "version": "1.0.0",
     "description": "Cloud Storage",
     "license": "MIT",
-    "main": "dist/cloud-storage.html",
+    "main": "src/cloud-storage.html",
     "keywords": [
         "polymer",
-        "web-components"
+        "web-components",
+        "caringo",
+        "object storage",
+        "scsp"
     ],
     "ignore": [
         "**/.*",
@@ -15,7 +18,7 @@
     ],
     "dependencies": {
         "polymer": "Polymer/polymer#^0.5.1",
-        "jquery": "~2.1.1",
-        "jquery-ui": "~1.11.2"
+        "jquery": "^2.1.1",
+        "jquery-ui": "^1.11.2"
     }
 }

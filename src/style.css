@@ -8,6 +8,7 @@ ul {
     list-style: none;
     padding: 0;
 }
+
 .ui-progressbar {
     background-color: #EBEBEB;
     width: 120px;
@@ -41,16 +42,19 @@ ul {
     line-height: 20px;
     margin-bottom: 5px;
 }
+
 .rowItemWrap {
     position: relative;
     height: 20px;
     width: 100%;
     cursor: pointer;
 }
+
 .rowItemWrap span {
     float: left;
     width: 100%;
 }
+
 .rowItem .rowItemWrap div {
     height: 20px;
     overflow: hidden;
