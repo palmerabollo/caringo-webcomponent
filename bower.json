@@ -1,24 +1,25 @@
 {
-    "name": "caringo-webcomponent",
-    "version": "1.0.0",
-    "description": "Cloud Storage",
-    "license": "MIT",
-    "main": "src/cloud-storage.html",
-    "keywords": [
-        "polymer",
-        "web-components",
-        "caringo",
-        "object storage",
-        "scsp"
-    ],
-    "ignore": [
-        "**/.*",
-        "node_modules",
-        "bower_components"
-    ],
-    "dependencies": {
-        "polymer": "Polymer/polymer#^0.5.1",
-        "jquery": "^2.1.1",
-        "jquery-ui": "^1.11.2"
-    }
+  "name": "caringo-webcomponent",
+  "version": "1.0.0",
+  "description": "Cloud Storage",
+  "license": "MIT",
+  "main": "src/cloud-storage.html",
+  "keywords": [
+    "polymer",
+    "web-components",
+    "caringo",
+    "object storage",
+    "scsp"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^0.5.1",
+    "jquery": "^2.1.1",
+    "jquery-ui": "^1.11.2",
+    "handlebars": "^2.0.0"
+  }
 }

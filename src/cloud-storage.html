@@ -4,6 +4,20 @@
     <template>
         <link rel="stylesheet" href="style.css"/>
 
+        <script id="file-template" type="text/x-handlebars-template">
+            <li class="rowItem">
+                <div class="rowItemWrap">
+                    <div class="name" title="{{ '\{{file.name}\}' }}">{{ '\{{file.name}\}' }}</div>
+                    <div class="options progress">
+                        <div id="progressbar_{{ '\{{file.id}\}' }}" class="field_content">
+                            <div class="progress-label"></div>
+                        </div>
+                    </div>
+                    <div class="size"><span>{{ '\{{size.size}\}' }} {{ '\{{size.unit}\}' }}</span></div>
+                </div>
+            </li>
+        </script>
+
         <div id="box">
             <ul id="fileList"></ul>
             <input id="files" type="file" multiple="true">
@@ -12,5 +26,6 @@
 
     <script src="../bower_components/jquery/dist/jquery.min.js"></script>
     <script src="../bower_components/jquery-ui/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="main.js"></script>
+    <script src="../bower_components/handlebars/handlebars.min.js"></script>
+    <script src="main.js"></script>
 </polymer-element>

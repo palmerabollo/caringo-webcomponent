@@ -1,18 +1,18 @@
 (function(Polymer) {
     'use strict';
 
-    var tagValue = function(num) {
+    var tagValue = function(size) {
         var tags = ['B', 'KB', 'MB', 'GB', 'TB'], unit = 'TB', i;
         for (i = 0; i < tags.length; i++) {
-            if (num >= 1024) {
-                num = num / 1024;
+            if (size >= 1024) {
+                size = size / 1024;
             }
             else {
                 unit = tags[i];
                 break;
             }
         }
-        return {num: num, unit: unit};
+        return {size: size.toFixed(2), unit: unit};
     };
 
     Polymer('cloud-storage', {
@@ -32,38 +32,12 @@
 
             var endpoint = this.endpoint;
 
-            input.change(function() {
-                function generateFileRow(name, fileId, fileSize) {
-                    var size = tagValue(fileSize);
-
-                    // TODO new component or template (try ES6 templates)
-                    var newFile = '<li class="rowItem">' +
-                        '<div class="rowItemWrap">' +
-                        '<div id="name_' + fileId + '" class="name" title="' + escape(name) + '">' +
-                        '<span>' + name + '</span></div>' +
-                        '<div class="options progress"><div id="progressbar_' + fileId + '" class="field_content">' +
-                        '<div class="progress-label"></div></div></div>' +
-                        '<div class="size"><span>' + size.num.toFixed(2) + ' ' + size.unit + '</span></div>' +
-                        '</div></li>';
-
-                    return newFile;
-                }
-
-                function fileUploaded(name, fileId) {
-                    var progressBar = $(shadowRoot.querySelector('#progressbar_' + fileId));
-                    $(progressBar).progressbar('value', 100);
-                }
-
-                function errorUploading(fileId, message) {
-                    var progressBar = $(shadowRoot.querySelector('#progressbar_' + fileId));
-                    $(progressBar).progressbar('value', -1);
-                }
-
-                function ajaxFileUpload(file, name, fileId) {
+            input.change(function onFileChoosen(a) {
+                function ajaxFileUpload(file) {
                     var formData = new FormData();
-                    formData.append('file', file, name);
+                    formData.append('file', file, file.name);
 
-                    var progressBar = $(shadowRoot.querySelector('#progressbar_' + fileId));
+                    var progressBar = $(shadowRoot.querySelector('#progressbar_' + file.id));
 
                     $(progressBar).progressbar({
                         value: false,
@@ -85,7 +59,7 @@
                     // moment we are sure that the file is available)
                     function verifyElementWasUploaded(timeWait) {
                         $.ajax({
-                            url: endpoint + '?format=json&name=' + encodeURIComponent(name),
+                            url: endpoint + '?format=json&name=' + encodeURIComponent(file.name),
                             type: 'GET',
                             xhrFields: {
                                 withCredentials: true
@@ -93,14 +67,14 @@
                         }).done(function (data, textStatus, jqXHR) {
                             var fileAvailable = data && data.length > 0;
                             if (!fileAvailable) {
-                                setTimeout(function() {
+                                setTimeout(function retry() {
                                     verifyElementWasUploaded(timeWait * 2);
                                 }, timeWait * 2);
                             } else {
-                                fileUploaded(name, fileId);
+                                fileUploaded(file);
                             }
                         }).fail(function headFail(jqXHR, textStatus) {
-                            fileUploaded(name, fileId);
+                            fileUploaded(file);
                         });
                     }
 
@@ -133,39 +107,64 @@
                         if (jqXHR.status === 0) {
                             // Make a HEAD request to check if the object was uploaded and the error is just due to a cross domain issue.
                             $.ajax({
-                                url: endpoint + '/' + name,
+                                url: endpoint + '/' + file.name,
                                 type: 'HEAD',
                                 xhrFields: {
                                     withCredentials: true
                                 }
                             }).done(function headSuccess(data, textStatus, jqXHR) {
-                                fileUploaded(name, fileId);
+                                fileUploaded(file);
                             }).fail(function headFail(jqXHR, textStatus) {
-                                errorUploading(fileId);
+                                errorUploading(file);
                             });
                         } else {
-                            errorUploading(fileId);
+                            errorUploading(file);
                         }
                     });
                 }
 
+                function generateFileRow(file) {
+                    var size = tagValue(file.size);
+
+                    var source = $(shadowRoot.querySelector('#file-template')).text();
+                    console.log(source)
+                    var template = Handlebars.compile(source);
+
+                    var context = {
+                        size: size, // TODO not needed, register handlebars helper
+                        file: file
+                    }
+                    console.log(context);
+                    var html = template(context);
+                    console.log(html);
+                    return html;
+                }
+
+                function fileUploaded(file) {
+                    var progressBar = $(shadowRoot.querySelector('#progressbar_' + file.id));
+                    $(progressBar).progressbar('value', 100);
+                }
+
+                function errorUploading(file, errorMessage) {
+                    var progressBar = $(shadowRoot.querySelector('#progressbar_' + file.id));
+                    $(progressBar).progressbar('value', -1);
+                }
+
                 for (var i = 0, file; file = input[0].files[i]; i++) {
-                    var name = (input[0].files.length === 1) ? $('#objectName').val() || file.name : file.name;
-                    name = name.replace(/</g, "&lt;").replace(/>/g, "&gt;"); // bugfix: avoid HTML injection
-                    var fileId = 'id_' + Math.floor(Math.random() * 1000000);
+                    file.id = 'file' + parseInt(Math.random() * 10000000);
 
                     $('.name').each(function overwriteFilesByName() {
-                        if ($(this).children('span').text() === name) {
+                        if ($(this).children('span').text() === file.name) {
                             $(this).parents('.rowItem').remove();
                         }
                     });
 
-                    ul.append(generateFileRow(name, fileId, file.size));
+                    ul.append(generateFileRow(file));
 
                     if (file.size >= FILE_SIZE_LIMIT) {
-                        errorUploading(fileId, 'File is too big');
+                        errorUploading(file, 'File is too big');
                     } else {
-                        ajaxFileUpload(file, name, fileId);
+                        ajaxFileUpload(file);
                     }
                 };
             });
