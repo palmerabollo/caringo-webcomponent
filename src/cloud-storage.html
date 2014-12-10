@@ -2,11 +2,15 @@
 
 <polymer-element name="cloud-storage" attributes="endpoint">
     <template>
-        <style>
-        </style>
+        <link rel="stylesheet" href="style.css"/>
 
-        <input type="file" multiple="true">
+        <div id="box">
+            <ul id="fileList"></ul>
+            <input id="files" type="file" multiple="true">
+        </div>
     </template>
 
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../bower_components/jquery-ui/jquery-ui.min.js"></script>
     <script type="text/javascript" src="main.js"></script>
 </polymer-element>
