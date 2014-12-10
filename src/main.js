@@ -28,7 +28,7 @@
 
             var input = $(this.$.files);
             var ul = $(this.$.fileList);
-            var shadowRoot = this.shadowRoot || this;
+            var shadowRoot = this.shadowRoot;
 
             var endpoint = this.endpoint;
 
@@ -36,6 +36,7 @@
                 function generateFileRow(name, fileId, fileSize) {
                     var size = tagValue(fileSize);
 
+                    // TODO new component or template (try ES6 templates)
                     var newFile = '<li class="rowItem">' +
                         '<div class="rowItemWrap">' +
                         '<div id="name_' + fileId + '" class="name" title="' + escape(name) + '">' +
@@ -68,7 +69,7 @@
                         value: false,
                         change: function() {
                             var label = $(progressBar).find('.progress-label');
-                            var value = parseInt($(progressBar).progressbar('value'));
+                            var value = $(progressBar).progressbar('value');
                             if (value === -1) {
                                 label.text('Error uploading');
                             } else {
