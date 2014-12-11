@@ -168,10 +168,6 @@
                 }
             }
 
-            /*$(box).click(function() {
-                input.click();
-            });*/
-
             input.change(function onFileChoosen() {
                 processFiles(input[0].files);
             });
