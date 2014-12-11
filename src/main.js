@@ -26,127 +26,128 @@
         domReady: function() {
             var FILE_SIZE_LIMIT = 10 * 1024 * 1024 * 1024;
 
+            var box = $(this.$.box);
             var input = $(this.$.files);
             var ul = $(this.$.fileList);
             var shadowRoot = this.shadowRoot;
 
             var endpoint = this.endpoint;
 
-            input.change(function onFileChoosen(a) {
-                function ajaxFileUpload(file) {
-                    var formData = new FormData();
-                    formData.append('file', file, file.name);
+            function ajaxFileUpload(file) {
+                var formData = new FormData();
+                formData.append('file', file, file.name);
 
-                    var progressBar = $(shadowRoot.querySelector('#progressbar_' + file.id));
+                var progressBar = $(shadowRoot.querySelector('#progressbar_' + file.id));
 
-                    $(progressBar).progressbar({
-                        value: false,
-                        change: function() {
-                            var label = $(progressBar).find('.progress-label');
-                            var value = $(progressBar).progressbar('value');
-                            if (value === -1) {
-                                label.text('Error uploading');
-                            } else {
-                                label.text(value + '%');
-                            }
+                $(progressBar).progressbar({
+                    value: false,
+                    change: function() {
+                        var label = $(progressBar).find('.progress-label');
+                        var value = $(progressBar).progressbar('value');
+                        if (value === false) {
+                            label.text('Error');
+                            $(progressBar).addClass('error');
+                        } else {
+                            label.text(Math.floor(value) + '%');
                         }
-                    });
+                    }
+                });
 
-                    // It seems that the CloudScalers are responding with a 202 to the POST and even with a 200 to the
-                    // following HEAD requests, even if the file is really not available yet, so in order to guarantee that
-                    // the file is reachable we do a GET to the bucket requesting the object, and we repeat the operation
-                    // after a increasing period of time until the GET do really return the file information (at this
-                    // moment we are sure that the file is available)
-                    function verifyElementWasUploaded(timeWait) {
+                // It seems that the CloudScalers are responding with a 202 to the POST and even with a 200 to the
+                // following HEAD requests, even if the file is really not available yet, so in order to guarantee that
+                // the file is reachable we do a GET to the bucket requesting the object, and we repeat the operation
+                // after a increasing period of time until the GET do really return the file information (at this
+                // moment we are sure that the file is available)
+                function verifyElementWasUploaded(timeWait) {
+                    $.ajax({
+                        url: endpoint + '?format=json&name=' + encodeURIComponent(file.name),
+                        type: 'GET',
+                        xhrFields: {
+                            withCredentials: true
+                        }
+                    }).done(function (data, textStatus, jqXHR) {
+                        var fileAvailable = data && data.length > 0;
+                        if (!fileAvailable) {
+                            setTimeout(function retry() {
+                                verifyElementWasUploaded(timeWait * 2);
+                            }, timeWait * 2);
+                        } else {
+                            uploadOk(file);
+                        }
+                    }).fail(function headFail(jqXHR, textStatus) {
+                        uploadOk(file);
+                    });
+                }
+
+                $.ajax({
+                    url: endpoint,
+                    type: 'POST',
+                    data: formData,
+                    // Options to tell JQuery not to process data nor worry about content-type
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    xhr: function() {
+                        var myXhr = $.ajaxSettings.xhr();
+                        if (myXhr.upload) {
+                            myXhr.upload.addEventListener('progress', function(e) {
+                                if (e.lengthComputable) {
+                                    var percentComplete = e.loaded / e.total;
+                                    $(progressBar).progressbar('value', 99 * percentComplete);
+                                }
+                            }, false);
+                        }
+                        return myXhr;
+                    }
+                }).done(function uploadSuccess(data, textStatus, jqXHR) {
+                    verifyElementWasUploaded(500);
+                }).fail(function uploadFail(jqXHR, textStatus) {
+                    if (jqXHR.status === 0) {
+                        // HEAD request to check if the object was uploaded and the error is just due to a cross domain issue.
                         $.ajax({
-                            url: endpoint + '?format=json&name=' + encodeURIComponent(file.name),
-                            type: 'GET',
+                            url: endpoint + '/' + file.name,
+                            type: 'HEAD',
                             xhrFields: {
                                 withCredentials: true
                             }
-                        }).done(function (data, textStatus, jqXHR) {
-                            var fileAvailable = data && data.length > 0;
-                            if (!fileAvailable) {
-                                setTimeout(function retry() {
-                                    verifyElementWasUploaded(timeWait * 2);
-                                }, timeWait * 2);
-                            } else {
-                                fileUploaded(file);
-                            }
+                        }).done(function headSuccess(data, textStatus, jqXHR) {
+                            uploadOk(file);
                         }).fail(function headFail(jqXHR, textStatus) {
-                            fileUploaded(file);
+                            uploadError(file);
                         });
+                    } else {
+                        uploadError(file);
                     }
+                });
+            }
 
-                    $.ajax({
-                        url: endpoint,
-                        type: 'POST',
-                        data: formData,
-                        // Options to tell JQuery not to process data nor worry about content-type
-                        cache: false,
-                        contentType: false,
-                        processData: false,
-                        xhrFields: {
-                            withCredentials: true
-                        },
-                        xhr: function() {
-                            var myXhr = $.ajaxSettings.xhr();
-                            if (myXhr.upload) {
-                                myXhr.upload.addEventListener('progress', function(e) {
-                                    if (e.lengthComputable) {
-                                        var percentComplete = e.loaded / e.total;
-                                        $(progressBar).progressbar('value', 99 * percentComplete);
-                                    }
-                                }, false);
-                            }
-                            return myXhr;
-                        }
-                    }).done(function uploadSuccess(data, textStatus, jqXHR) {
-                        verifyElementWasUploaded(500);
-                    }).fail(function uploadFail(jqXHR, textStatus) {
-                        if (jqXHR.status === 0) {
-                            // Make a HEAD request to check if the object was uploaded and the error is just due to a cross domain issue.
-                            $.ajax({
-                                url: endpoint + '/' + file.name,
-                                type: 'HEAD',
-                                xhrFields: {
-                                    withCredentials: true
-                                }
-                            }).done(function headSuccess(data, textStatus, jqXHR) {
-                                fileUploaded(file);
-                            }).fail(function headFail(jqXHR, textStatus) {
-                                errorUploading(file);
-                            });
-                        } else {
-                            errorUploading(file);
-                        }
-                    });
-                }
+            function generateFileElement(file) {
+                var size = tagValue(file.size);
+                var source = $(shadowRoot.querySelector('#file-template')).text();
+                var template = Handlebars.compile(source);
 
-                function generateFileRow(file) {
-                    var size = tagValue(file.size);
+                var context = {
+                    size: size, // TODO not needed, register handlebars helper
+                    file: file
+                };
+                return template(context);
+            }
 
-                    var source = $(shadowRoot.querySelector('#file-template')).text();
-                    var template = Handlebars.compile(source);
+            function uploadOk(file) {
+                var progressBar = $(shadowRoot.querySelector('#progressbar_' + file.id));
+                $(progressBar).progressbar('value', 100);
+            }
 
-                    var context = {
-                        size: size, // TODO not needed, register handlebars helper
-                        file: file
-                    }
-                    return template(context);
-                }
+            function uploadError(file, errorMessage) {
+                var progressBar = $(shadowRoot.querySelector('#progressbar_' + file.id));
+                $(progressBar).progressbar('value', false);
+            }
 
-                function fileUploaded(file) {
-                    var progressBar = $(shadowRoot.querySelector('#progressbar_' + file.id));
-                    $(progressBar).progressbar('value', 100);
-                }
-
-                function errorUploading(file, errorMessage) {
-                    var progressBar = $(shadowRoot.querySelector('#progressbar_' + file.id));
-                    $(progressBar).progressbar('value', -1);
-                }
-
-                for (var i = 0, file; file = input[0].files[i]; i++) {
+            function processFiles(files) {
+                for (var i = 0, file; file = files[i]; i++) {
                     file.id = 'file' + parseInt(Math.random() * 10000000);
 
                     $('.name').each(function overwriteFilesByName() {
@@ -155,14 +156,38 @@
                         }
                     });
 
-                    ul.append(generateFileRow(file));
+                    ul.append(generateFileElement(file));
 
                     if (file.size >= FILE_SIZE_LIMIT) {
-                        errorUploading(file, 'File is too big');
+                        uploadError(file, 'File is too big');
                     } else {
                         ajaxFileUpload(file);
                     }
-                };
+                }
+            }
+
+            input.change(function onFileChoosen() {
+                processFiles(input[0].files);
+            });
+
+            $(box).on('dragover', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+
+            $(box).on('dragenter', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+
+            $(box).on('drop', function(e) {
+                if (e.originalEvent.dataTransfer) {
+                    if (e.originalEvent.dataTransfer.files.length) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        processFiles(e.originalEvent.dataTransfer.files);
+                    }
+                }
             });
         },
 
