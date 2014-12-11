@@ -126,7 +126,6 @@
 
             function generateFileRow(file) {
                 var size = tagValue(file.size);
-
                 var source = $(shadowRoot.querySelector('#file-template')).text();
                 var template = Handlebars.compile(source);
 
@@ -134,10 +133,7 @@
                     size: size, // TODO not needed, register handlebars helper
                     file: file
                 };
-                console.log(context);
-                var html = template(context);
-                console.log(html);
-                return html;
+                return template(context);
             }
 
             function fileUploaded(file) {
