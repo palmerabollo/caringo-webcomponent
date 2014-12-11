@@ -1,9 +1,17 @@
 #box {
     background: #EBEBEB;
     height: auto;
-    width: 300px;
+    width: 230px;
     max-height: 150px;
     overflow-y: auto;
+    font-size: 10px;
+    min-height: 100px;
+    position: relative;
+    overflow-x: hidden;
+    border-radius: 3px;
+}
+#box.dragging {
+    border: 1px solid #CCCCCC;
 }
 
 ul {
@@ -12,8 +20,8 @@ ul {
 }
 
 .ui-progressbar {
-    background-color: #EBEBEB;
-    width: 120px;
+    background-color: #F0F0F0;
+    width: 80px;
     position: relative;
 }
 
@@ -28,22 +36,21 @@ ul {
 
 .progress-label {
     position: absolute;
-    left: 40%;
+    left: 35%;
     color: #333333;
 }
 
 .options.progress {
     opacity: 1;
-    width: 120px;
+    width: 80px;
 }
 
 .rowItem {
     clear: both;
-    padding: 1px;
     height: 20px;
-    font-size: 12px;
     color: #555555;
     line-height: 20px;
+    margin-bottom: 5px;
 }
 
 .rowItemWrap {
@@ -58,17 +65,45 @@ ul {
     width: 100%;
 }
 
-.rowItem .rowItemWrap div {
+.rowItem .rowItemWrap > div {
     height: 20px;
     overflow: hidden;
     white-space: nowrap;
     float: left;
-    margin-right: 5px;
+    margin-left: 5px;
 }
 
 .name {
-    width: 85px;
+    width: 70px;
+    text-align: center;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+#hint, ul {
+    line-height: 20px;
+    position: absolute;
+    padding-top: 10px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #F0F0F0;
+    min-height: 100px;
+    pointer-events: none;
+    margin: 0;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+
+}
+#hint {
+    color: #999999;
+    text-align: center;
+    padding-top: 20px;
+}
+
+input {
+    width: 230px;
+    height: 100px;
 }

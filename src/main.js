@@ -27,6 +27,7 @@
             var FILE_SIZE_LIMIT = 10 * 1024 * 1024 * 1024;
 
             var box = $(this.$.box);
+            var hint = $(this.$.hint);
             var input = $(this.$.files);
             var ul = $(this.$.fileList);
             var shadowRoot = this.shadowRoot;
@@ -147,11 +148,12 @@
             }
 
             function processFiles(files) {
+                $(hint).hide();
                 for (var i = 0, file; file = files[i]; i++) {
                     file.id = 'file' + parseInt(Math.random() * 10000000);
 
-                    $('.name').each(function overwriteFilesByName() {
-                        if ($(this).children('span').text() === file.name) {
+                    $(shadowRoot.querySelectorAll('.name')).each(function overwriteFilesByName() {
+                        if ($(this).text() === file.name) {
                             $(this).parents('.rowItem').remove();
                         }
                     });
@@ -178,9 +180,15 @@
             $(box).on('dragenter', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
+                $(box).addClass('dragging');
+            });
+
+            $(box).on('dragleave', function(e) {
+                $(box).removeClass('dragging');
             });
 
             $(box).on('drop', function(e) {
+                $(box).removeClass('dragging');
                 if (e.originalEvent.dataTransfer) {
                     if (e.originalEvent.dataTransfer.files.length) {
                         e.preventDefault();
