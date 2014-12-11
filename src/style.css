@@ -2,7 +2,7 @@
     background: #EBEBEB;
     height: auto;
     width: 300px;
-    max-height: 120px;
+    max-height: 150px;
     overflow-y: auto;
 }
 
@@ -19,9 +19,9 @@ ul {
 
 .ui-progressbar-value {
     height: 20px;
-    margin: -1px;
     background-color: #65BE2E;
 }
+
 .ui-progressbar.error .ui-progressbar-value {
     background-color: red;
 }
@@ -39,13 +39,11 @@ ul {
 
 .rowItem {
     clear: both;
-    padding: 3px;
+    padding: 1px;
     height: 20px;
     font-size: 12px;
     color: #555555;
-    text-decoration: none;
     line-height: 20px;
-    margin-bottom: 5px;
 }
 
 .rowItemWrap {
@@ -68,14 +66,6 @@ ul {
     margin-right: 5px;
 }
 
-.field_content {
-    float: none !important;
-    display: table-cell !important;
-    vertical-align: middle !important;
-    line-height: 20px;
-    overflow: hidden !important;
-    white-space: normal !important;
-}
 .name {
     width: 85px;
     overflow: hidden;

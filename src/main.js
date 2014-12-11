@@ -66,17 +66,17 @@
                             withCredentials: true
                         }
                     }).done(function (data, textStatus, jqXHR) {
-                            var fileAvailable = data && data.length > 0;
-                            if (!fileAvailable) {
-                                setTimeout(function retry() {
-                                    verifyElementWasUploaded(timeWait * 2);
-                                }, timeWait * 2);
-                            } else {
-                                fileUploaded(file);
-                            }
-                        }).fail(function headFail(jqXHR, textStatus) {
-                            fileUploaded(file);
-                        });
+                        var fileAvailable = data && data.length > 0;
+                        if (!fileAvailable) {
+                            setTimeout(function retry() {
+                                verifyElementWasUploaded(timeWait * 2);
+                            }, timeWait * 2);
+                        } else {
+                            uploadOk(file);
+                        }
+                    }).fail(function headFail(jqXHR, textStatus) {
+                        uploadOk(file);
+                    });
                 }
 
                 $.ajax({
@@ -103,28 +103,28 @@
                         return myXhr;
                     }
                 }).done(function uploadSuccess(data, textStatus, jqXHR) {
-                        verifyElementWasUploaded(500);
-                    }).fail(function uploadFail(jqXHR, textStatus) {
-                        if (jqXHR.status === 0) {
-                            // Make a HEAD request to check if the object was uploaded and the error is just due to a cross domain issue.
-                            $.ajax({
-                                url: endpoint + '/' + file.name,
-                                type: 'HEAD',
-                                xhrFields: {
-                                    withCredentials: true
-                                }
-                            }).done(function headSuccess(data, textStatus, jqXHR) {
-                                    fileUploaded(file);
-                                }).fail(function headFail(jqXHR, textStatus) {
-                                    errorUploading(file);
-                                });
-                        } else {
-                            errorUploading(file);
-                        }
-                    });
+                    verifyElementWasUploaded(500);
+                }).fail(function uploadFail(jqXHR, textStatus) {
+                    if (jqXHR.status === 0) {
+                        // HEAD request to check if the object was uploaded and the error is just due to a cross domain issue.
+                        $.ajax({
+                            url: endpoint + '/' + file.name,
+                            type: 'HEAD',
+                            xhrFields: {
+                                withCredentials: true
+                            }
+                        }).done(function headSuccess(data, textStatus, jqXHR) {
+                            uploadOk(file);
+                        }).fail(function headFail(jqXHR, textStatus) {
+                            uploadError(file);
+                        });
+                    } else {
+                        uploadError(file);
+                    }
+                });
             }
 
-            function generateFileRow(file) {
+            function generateFileElement(file) {
                 var size = tagValue(file.size);
                 var source = $(shadowRoot.querySelector('#file-template')).text();
                 var template = Handlebars.compile(source);
@@ -136,12 +136,12 @@
                 return template(context);
             }
 
-            function fileUploaded(file) {
+            function uploadOk(file) {
                 var progressBar = $(shadowRoot.querySelector('#progressbar_' + file.id));
                 $(progressBar).progressbar('value', 100);
             }
 
-            function errorUploading(file, errorMessage) {
+            function uploadError(file, errorMessage) {
                 var progressBar = $(shadowRoot.querySelector('#progressbar_' + file.id));
                 $(progressBar).progressbar('value', false);
             }
@@ -156,10 +156,10 @@
                         }
                     });
 
-                    ul.append(generateFileRow(file));
+                    ul.append(generateFileElement(file));
 
                     if (file.size >= FILE_SIZE_LIMIT) {
-                        errorUploading(file, 'File is too big');
+                        uploadError(file, 'File is too big');
                     } else {
                         ajaxFileUpload(file);
                     }
@@ -174,23 +174,21 @@
                 e.preventDefault();
                 e.stopPropagation();
             });
+
             $(box).on('dragenter', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
             });
 
             $(box).on('drop', function(e) {
-                if(e.originalEvent.dataTransfer){
-                    if(e.originalEvent.dataTransfer.files.length) {
+                if (e.originalEvent.dataTransfer) {
+                    if (e.originalEvent.dataTransfer.files.length) {
                         e.preventDefault();
                         e.stopPropagation();
                         processFiles(e.originalEvent.dataTransfer.files);
                     }
                 }
             });
-
-
-
         },
 
         // Fires when the element was inserted into the document
